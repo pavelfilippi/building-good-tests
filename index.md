@@ -57,8 +57,9 @@ You can also rely on magic comparison methods (e.g. `__eq__`) along with special
 * Doesn't prevent parameterization.
 * It's easily avoided in `python` and `pytest` by having multiple test methods in a test class/module/package, or by utilizing magic comparison methods like `__eq__`.
 
-https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html
-https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#avoid-multiple-asserts
+<https://testing.googleblog.com/2018/06/testing-on-toilet-keep-tests-focused.html>
+
+<https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#avoid-multiple-asserts>
 
 ##### Bad:
 
@@ -176,7 +177,7 @@ A test should not involve any superfluous resources. If you don't need to involv
 
 When a test utilizes less resources, it will inherently run faster. The faster a test is, the more often it can be run, and the less time a developer is waiting for it.
 
-https://www.youtube.com/watch?reload=9&v=AJ7u_Z-TS-A
+<https://www.youtube.com/watch?reload=9&v=AJ7u_Z-TS-A>
 
 ### Test behavior, not implementation
 
@@ -189,7 +190,7 @@ Design your tests around the behavior you want to test, not the implementation y
 * Reduces the number of tests, due to focusing on the tests that matter.
 * Encourages sufficient levels of abstraction.
 
-https://testing.googleblog.com/2013/08/testing-on-toilet-test-behavior-not.html
+<https://testing.googleblog.com/2013/08/testing-on-toilet-test-behavior-not.html>
 
 ### Only verify state-changing method calls
 
@@ -200,7 +201,7 @@ Note: this does not mean don't ever use non-state-changing method calls in your 
 * Non-state-changing method calls will often be tested through other means, such as using them to check that state-changing method calls did what they should.
 * It adds unnecessary fluff to the test suite.
 
-https://testing.googleblog.com/2017/12/testing-on-toilet-only-verify-state.html
+<https://testing.googleblog.com/2017/12/testing-on-toilet-only-verify-state.html>
 
 ### Utilize fixture scope levels to optimize your tests
 
@@ -330,8 +331,9 @@ E             TagName: 'div' is not 'h1'
 website/test_landing_page.py:22: AssertionError
 ```
 
-https://testing.googleblog.com/2014/10/testing-on-toilet-writing-descriptive.html
-https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#naming-your-tests
+<https://testing.googleblog.com/2014/10/testing-on-toilet-writing-descriptive.html>
+
+<https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#naming-your-tests>
 
 ### The order tests are run in shouldn't matter (including parameterized tests)
 
@@ -362,7 +364,7 @@ When parameterizing a test, or scope, pytest will automatically use the `repr` f
 * It's more readable.
 * It makes targeting tests easier.
 
-https://testing.googleblog.com/2014/10/testing-on-toilet-writing-descriptive.html
+<https://testing.googleblog.com/2014/10/testing-on-toilet-writing-descriptive.html>
 
 ### Every test should be able to be run in parallel with any other test
 
@@ -403,13 +405,13 @@ Try to avoid mocking things whenever possible.
 * Mocking makes tests harder to maintain as you now have to maintain the mocks as well.
 * The more you mock, the less trustworthy a test is.
 
-https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html
+<https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html>
 
 ### Test coverage is not a metric for what was tested; it's a metric for what code your tests used
 
 Just because there is good code coverage in the tests doesn't mean those are good tests, are that they're even trying to test something. At best, code coverage can be used to determine what areas of your code should be pruned. At worst, it gives developers false confidence in the quality of their code.
 
-https://testing.googleblog.com/2008/03/tott-understanding-your-coverage-data.html
+<https://testing.googleblog.com/2008/03/tott-understanding-your-coverage-data.html>
 
 ### The code should be easy to test
 
@@ -425,4 +427,4 @@ If you find that you can't easily test your code, you should change the code so 
 * Makes *using* code easier.
 * Encourages avoiding tightly coupled code
 
-https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#less-coupled-code
+<https://docs.microsoft.com/en-us/dotnet/core/testing/unit-testing-best-practices#less-coupled-code>
