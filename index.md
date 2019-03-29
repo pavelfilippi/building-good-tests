@@ -21,15 +21,60 @@ A good measure to go buy when trying to figure out if you should break something
 
 ### Do not test the setups. Test the end result
 
-Your test functions are for the end result, not the steps to get there, so don't bother asserting those went well in the test. 
+Your test functions are for the end result, not the steps to get there, so don't bother asserting those went well in the test. Your fixtures are meant to get your SUT to a specific state that, once reached, is not modified until all your tests are done running (Only observe. Do not interact).
 
 #### Why?
 
-Steps in the setup process can be broken out into standalone fixtures with their own assert statements to make sure they're alright. If those asserts fail, they will show up as an error, rather than a failure in the test. When a test has an error, it should represent that the desired state for that test could not be reached. If a test fails, it should represent that the state was reached, but something about the state is wrong. Additionally, if a fixture has a problem, then every test that exists in the scope of that fixture will automatically show the problem, and you''ll have a cascading failure that happens quickly (performance boost!).
+Steps in the setup process can be broken out into standalone fixtures with their own assert statements to make sure they're alright (if they wouldn't have an error on their own anyway). If those asserts fail, they will show up as an error, rather than a failure in the test. When a test has an error, it should represent that the desired state for that test could not be reached. If a test fails, it should represent that the state was reached, but something about the state is wrong. Additionally, if a fixture has a problem, then every test that exists in the scope of that fixture will automatically show the problem, and you''ll have a cascading failure that happens quickly (performance boost!).
 
 This lets us know at a quick glance which tests are actually failing according to what they should be testing, and which ones are just being impacted by problems in some earlier step of the workflow. For every step in the setup process, there should be an associated test scenario that tests this state. 
 
 Those fixtures should also have their own tests anyway, and it's not the responsibility of this test to make sure those went well.
+
+For example, let's say you want to run an end-to-end test using Selenium to make sure logging in works (and we'll assume that after you log in successfully, it would bring you to some sort of landing page). That's not something you can (or should) test directly with an end-to-end test, because the process itself is handed off from the browser almost immediately, and happens mostly in the backend. So instead, you can only have your test make sure that after trying to go through the process of logging in, it ended up where it was supposed to.
+
+##### Bad
+
+```python
+def test_login(driver):
+    driver.get("https://www.mysite.com/login")
+    page = LoginPage(driver)
+    assert page.title == "login"
+    page.login(username="username", password="password")
+    page = LandingPage(driver)
+    assert driver.title
+```
+
+This makes you have to repeat yourself, and potentially perform steps more times than is necessary over the course of your test suite. The test scenario is making sure the landing page is as it should be after logging in, but this test attempts to validate more parts of the process, while also failing to adequetly test the landing page. Sure, if it passes, it would tell you that logging in worked, but it wastes resources and opportunity becase you don't need the browser to test that logging in works, and the opportunity provided by those expensive preparations was wasted by not running more checks against the static page.
+
+##### Good
+
+test_landing_page.py:
+
+```python
+class TestAfterLogIn():
+    @pytest.fixture(scope="class", autouse=True)
+    def login_page(self, driver):
+        driver.get("https://www.mysite.com/login")
+        page = LoginPage(driver)
+        assert page.title == "login"
+        return page
+
+    @pytest.fixture(scope="class", autouse=True)
+    def login(self, login_page):
+        login_page.login(username="username", password="password")
+    
+    @pytest.fixture(scope="class", autouse=True)
+    def page(self, driver):
+        return LandingPage(driver)
+        
+    def test_title(self, page):
+        assert page.title == "Welcome!"
+    
+    # other tests
+```
+
+This structure will tell you exactly where the problem was (if there was one) without the need to dig through the stacktrace, as it will tell you what fixture threw an error, and each fixture is only responsible for one step. This also leverages the fixtures that were run for the first test in the class so you can run as many tests as you need against this particular state without having to rerun anything. The setups/teardowns are usually much more resource-demanding than actual tests, especially for end-to-end tests, so taking advantage of an alreayd established state to run several tests is very valuable.
 
 ### For every fixture that represents a change in the state, there should be a test for that state
 
@@ -37,7 +82,7 @@ For every fixture that changes something about the state of the SUT, there shoul
 
 #### Why?
 
-In combination with the previous point, this creates a system where you can quickly and easily identify where the breakdowns are in the flows of the STU, and how widely impacting certain problems are. Failures will tell you exactly where a problem is, while errors tell you how much impact that problem has.
+In combination with the previous point, this creates a system where you can quickly and easily identify where the breakdowns are in the flows of the STU, and how widely impacting certain problems are. Failures will tell you exactly where a problem is, while errors tell you how much impact that problem has. It also gives you the liberty to take shortcuts to help make your tests faster, because you can know that the steps you're skipping over have test cases of their own. In the previous example, that would just mean the login page itself would have test cases of its own. Parellelization also helps speed your tests up, and the more broken up the tests are, the greater the benefit of parrallelizing.
 
 ### 1 `assert` per test function/method and nothing else
 
@@ -236,6 +281,7 @@ For example, let's say you want to test that logging in to your website works, a
 * Establishes a consistent means of determining what state the test subject should be in while the tests for that scenario are running.
 * The test subject reflects the desired behavior after a certain process is performed (e.g. I should be on the landing page after logging in).
 * You can group tests more effectively (see next point). 
+* Each test case is responsible for only a single thing, which is much simpler and easier to manage.
 
 ### Group tests based on what they're testing
 
