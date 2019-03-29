@@ -453,9 +453,11 @@ Try to avoid mocking things whenever possible.
 
 <https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html>
 
-### Test coverage is not a metric for what was tested; it's a metric for what code your tests used
+### Test coverage is not a metric for what was tested; it's a metric for what code your tests managed to hit
 
 Just because there is good code coverage in the tests doesn't mean those are good tests, are that they're even trying to test something. At best, code coverage can be used to determine what areas of your code should be pruned. At worst, it gives developers false confidence in the quality of their code.
+
+However, it can be leveraged during the CI/CD pipeline to determine if developers at least tried to hit the lines of code they added or changed. You can (and should) configure your build system to check that any lines that were added/modified have tests that at least hit those lines, and if not, fail the build. It doesn't tell you that the lines that were hit were tested properly, but it's a cheap and easy way to tell that lines that were added/modified definitely aren't tested at all. Enforcing this doesn't just make sure that the developers know what they're adding/modifying and how that code can be hit, but it also encourages them to consider the behavior of the actual application so they can write more effective tests.
 
 <https://testing.googleblog.com/2008/03/tott-understanding-your-coverage-data.html>
 
